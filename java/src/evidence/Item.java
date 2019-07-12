@@ -1,8 +1,6 @@
-package fake;
+package evidence;
 
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
 
 public interface Item {
 

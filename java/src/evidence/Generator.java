@@ -1,10 +1,9 @@
-package fake;
+package evidence;
 
-import com.sun.jmx.snmp.agent.SnmpGenericMetaServer;
-import fake.messages.Message;
-import fake.messages.Parser;
-import fake.vimeworld.Player;
-import fake.vimeworld.Vime;
+import evidence.messages.Message;
+import evidence.messages.Parser;
+import evidence.vimeworld.Player;
+import evidence.vimeworld.Vime;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.imageio.ImageIO;
@@ -23,7 +22,7 @@ public class Generator {
 	public static void main(String[] args) throws IOException {
 
 		Yaml yaml = new Yaml();
-		InputStream inputStream = new FileInputStream("fake.yml");
+		InputStream inputStream = new FileInputStream("evidence.yml");
 		Map<String, Object> yml = yaml.load(inputStream);
 //		System.out.println(yml);
 		System.out.println();

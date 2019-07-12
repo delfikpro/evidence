@@ -1,6 +1,6 @@
-package fake.vimeworld;
+package evidence.vimeworld;
 
-import fake.Color;
+import evidence.Color;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,10 +74,10 @@ public class Player {
 		}
 	}
     
-    public fake.vimeworld.Session getSession() {
+    public evidence.vimeworld.Session getSession() {
         try {
             JSONObject online = new JSONObject(API.readRequest("http://api.vime.world/user/" + id + "/session"));
-            return new fake.vimeworld.Session(online.getJSONObject("online"));
+            return new evidence.vimeworld.Session(online.getJSONObject("online"));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

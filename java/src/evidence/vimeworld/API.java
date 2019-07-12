@@ -1,4 +1,4 @@
-package fake.vimeworld;
+package evidence.vimeworld;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,30 +34,30 @@ public final class API {
 		}
 	}
 
-	public static fake.vimeworld.Guild getGuild(String guildname) {
+	public static evidence.vimeworld.Guild getGuild(String guildname) {
 		try {
 			String rawJson = readRequest("http://api.vime.world/guild/get?name=" + guildname);
-			return new fake.vimeworld.Guild(new JSONObject(rawJson));
+			return new evidence.vimeworld.Guild(new JSONObject(rawJson));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	public static fake.vimeworld.Guild getGuild(int id) {
+	public static evidence.vimeworld.Guild getGuild(int id) {
 		try {
 			String rawJson = readRequest("http://api.vime.world/guild/get?id=" + id);
-			return new fake.vimeworld.Guild(new JSONObject(rawJson));
+			return new evidence.vimeworld.Guild(new JSONObject(rawJson));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public static fake.vimeworld.Player getPlayer(String player) {
+	public static evidence.vimeworld.Player getPlayer(String player) {
 		try {
 			String rawJson = readRequest("http://api.vime.world/user/name/" + player);
 			JSONArray array = new JSONArray(rawJson);
-			return new fake.vimeworld.Player(array.getJSONObject(0));
+			return new evidence.vimeworld.Player(array.getJSONObject(0));
 		} catch (IllegalArgumentException e) {
 			return null;
 		} catch (JSONException e) {
@@ -65,8 +65,8 @@ public final class API {
 		}
 	}
 	
-	public static List<fake.vimeworld.Player> getPlayers(Integer... ids) {
-		List<fake.vimeworld.Player> list = new ArrayList<>(ids.length);
+	public static List<evidence.vimeworld.Player> getPlayers(Integer... ids) {
+		List<evidence.vimeworld.Player> list = new ArrayList<>(ids.length);
 		String parameter = Utils.merge(ids, String::valueOf, ",");
 		String rawJson = readRequest("http://api.vime.world/user/" + parameter);
 		try {

@@ -1,7 +1,7 @@
-package fake.messages;
+package evidence.messages;
 
-import fake.vimeworld.Player;
-import fake.vimeworld.Vime;
+import evidence.vimeworld.Player;
+import evidence.vimeworld.Vime;
 
 public class JoinMessage implements Message {
 

@@ -1,9 +1,9 @@
-package fake.messages;
+package evidence.messages;
 
-import fake.vimeworld.Player;
-import fake.vimeworld.Vime;
+import evidence.vimeworld.Player;
+import evidence.vimeworld.Vime;
 
-public class PlayerMessage implements fake.messages.Message {
+public class PlayerMessage implements evidence.messages.Message {
 
 	private final String name;
 	private final String message;

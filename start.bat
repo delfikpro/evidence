@@ -1,2 +1,1 @@
-java -jar fake.jar %*
-pause
+java -jar evidence.jar %*pause

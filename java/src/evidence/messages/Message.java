@@ -1,4 +1,4 @@
-package fake.messages;
+package evidence.messages;
 
 public interface Message {
 
