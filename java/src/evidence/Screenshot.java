@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,7 +18,11 @@ public class Screenshot {
 	private final Graphics2D g;
 
 	public Screenshot(String path, int scale) throws IOException {
-		image = ImageIO.read(new File(path));
+		this(new File(path), scale);
+	}
+
+	public Screenshot(File screenshotFile, int scale) throws IOException {
+		image = ImageIO.read(screenshotFile);
 		g = image.createGraphics();
 		this.scale = scale;
 	}
@@ -99,8 +102,8 @@ public class Screenshot {
 
 	private static BufferedImage getPage(int page) throws IOException {
 		if (pages[page] != null) return pages[page];
-		File file = new File(String.format("pages/unicode_page_%02x.png", page));
-		BufferedImage one = ImageIO.read(file);
+		String name = String.format("assets/minecraft/textures/font/unicode_page_%02x.png", page);
+		BufferedImage one = ImageIO.read(ResourcePack.get(name));
 		BufferedImage img = new BufferedImage(one.getWidth(), one.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = img.createGraphics();
 		g.drawImage(one, 0, 0, 256, 256, 0, 0, 256, 256, null);
@@ -108,13 +111,10 @@ public class Screenshot {
 		return pages[page] = img;
 	}
 
-	private static boolean initGlyphs() throws IOException {
-		File f = new File("width.bin");
-		if (!f.exists()) return false;
-		InputStream is = new FileInputStream(f);
+	private static void initGlyphs() throws IOException {
+		InputStream is = ResourcePack.get("assets/minecraft/font/glyph_sizes.bin");
 		is.read(glyphs);
 		is.close();
-		return true;
 	}
 
 
@@ -152,22 +152,27 @@ public class Screenshot {
 	}
 
 
-	public void drawImageInversionMask(String s, int x, int y) throws IOException {
+	public void drawImageInversionMask(String s, int x, int y, int w, int h) throws IOException {
 
-		BufferedImage i = ImageIO.read(new File(s));
+		BufferedImage i = ImageIO.read(ResourcePack.get(s));
 		WritableRaster r = i.getRaster();
 		WritableRaster t = image.getRaster();
 
-		for (int xx = 0; xx < i.getWidth(); xx++) {
-			for (int yy = 0; yy < i.getHeight(); yy++) {
+		for (int xx = 0; xx < w; xx++) {
+			for (int yy = 0; yy < h; yy++) {
 				int[] from = r.getPixel(xx, yy, (int[]) null);
-				int[] to = t.getPixel(x + xx, y + yy, (int[]) null);
-				if (from[3] != 0) {
+
+				if (from[3] == 0) continue;
+
+				for (int j = 0; j < 4; j++) {
+					int nx = xx * 2 + j / 2;
+					int ny = yy * 2 + j % 2;
+					int[] to = t.getPixel(x + nx, y + ny, (int[]) null);
 					to[0] = 255 - to[0];
 					to[1] = 255 - to[1];
 					to[2] = 255 - to[2];
+					t.setPixel(x + nx, y + ny, to);
 				}
-				t.setPixel(x + xx, y + yy, to);
 			}
 		}
 

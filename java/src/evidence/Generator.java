@@ -4,6 +4,9 @@ import evidence.messages.Message;
 import evidence.messages.Parser;
 import evidence.vimeworld.Player;
 import evidence.vimeworld.Vime;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.imageio.ImageIO;
@@ -19,13 +22,35 @@ public class Generator {
 	public static int compassPos;
 	static Screenshot s;
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
+
+		System.out.println("Evidence v1.4 by DelfikPro\n");
+
+		OptionParser parser = new OptionParser();
+		OptionSpec<String> inputSpec = parser.accepts("screen", "Path to screenshot with F1 file").withRequiredArg().defaultsTo("example01.png");
+		OptionSpec<String> outputSpec = parser.accepts("output", "Folder for output").withRequiredArg().defaultsTo("evidences");
+		OptionSpec<String> resourcePacksSpec = parser.accepts("rp", "Enables resourcepack").withRequiredArg();
+		OptionSet set = parser.parse(args);
+		File screenshotFile = new File(set.valueOf(inputSpec));
+		String path = set.valueOf(outputSpec);
+		File outputDir = new File(path.length() == 0 ? "." : path);
+		if (!outputDir.isDirectory()) {
+			System.out.println("Folder " + outputDir.getAbsolutePath() + " doesn't exist");
+			return;
+		}
+		List<String> resourcePacks = set.valuesOf(resourcePacksSpec);
+		new ResourcePack(new File("resourcepacks/vanilla.zip"));
+		System.out.println("Vanilla resourcepack was loaded successfully.");
+		for (String resourcePack : resourcePacks) {
+			new ResourcePack(new File("resourcepacks/" + resourcePack));
+			System.out.println("Loaded resourcepack '" + resourcePack + "'");
+		}
+
 
 		Yaml yaml = new Yaml();
 		InputStream inputStream = new FileInputStream("evidence.yml");
 		Map<String, Object> yml = yaml.load(inputStream);
-//		System.out.println(yml);
-		System.out.println();
 
 		String playername = (String) yml.get("name");
 		String servername = (String) yml.get("server");
@@ -46,67 +71,53 @@ public class Generator {
 		});
 		Player p = Vime.getPlayer(playername);
 
-		execute("Loading file", () -> s = new Screenshot(args.length == 0 ? "screen.png" : args[0], 1));
+		execute("Loading file", () -> Generator.s = new Screenshot(screenshotFile, 1));
 
 		execute("Drawing hand", () -> {
-			String handPath = "pages/hand" + s.getWidth() + ".png";
+			String handPath = "pages/hand" + Generator.s.getWidth() + ".png";
 			File hand = new File(handPath);
 			if (!hand.exists()) {
 				System.out.println("Screenshot's width is NOT SUPPORTED! Hand will be distorted!");
 				handPath = "pages/hand1920.png";
 			}
-			s.overlapImage(handPath);
+			Generator.s.overlapImage(handPath);
 		});
 
 		execute("Adding texteria", () -> {
-			s.drawStringWithShadow("[§e" + p.getLevel() + "§f] " + p.getName(), 4, 4);
-			s.drawStringWithShadow(servername, 4, 24);
+			Generator.s.drawStringWithShadow("[§e" + p.getLevel() + "§f] " + p.getName(), 4, 4);
+			Generator.s.drawStringWithShadow(servername, 4, 24);
 			String multiplier = Vime.getPlayerMultiplier(p);
-			s.drawStringWithShadow((multiplier.equals("1") ? "" : ("§e[§dx" + multiplier + "§e] ")) + "§fКоличество коинов: §e" + coins, 4, s.getHeight() - 50);
+			Generator.s.drawStringWithShadow((multiplier.equals("1") ? "" : ("§e[§dx" + multiplier + "§e] ")) + "§fКоличество коинов: §e" + coins, 4, Generator.s.getHeight() - 50);
 		});
 
 		execute("Drawing crosshair", () ->
-			s.drawImageInversionMask("pages/cross.png", s.getWidth() / 2 - 14, s.getHeight() / 2 - 14)
+			Generator.s.drawImageInversionMask("assets/minecraft/textures/gui/icons.png", Generator.s.getWidth() / 2 - 14, Generator.s.getHeight() / 2 - 14, 15, 15)
 		);
 
 
 
 
 
-		int ix = s.getWidth() / 2 - 182;
+		int ix = Generator.s.getWidth() / 2 - 182;
 		execute("Drawing inventory", () -> {
-			BufferedImage i = ImageIO.read(new File("pages/widgets.png"));
-			s.getGraphics().drawImage(i, ix, s.getHeight() - 44,
-					s.getWidth() / 2 + 182, s.getHeight(), 0, 0, 364, 44, null);
-			int slot = s.getWidth() / 2 - 184 + 40 * selectedSlot;
-			s.getGraphics().drawImage(i, slot, s.getHeight() - 46, slot + 48, s.getHeight() - 2, 0, 44, 48, 88, null);
+			BufferedImage i = ImageIO.read(ResourcePack.get("assets/minecraft/textures/gui/widgets.png"));
+			Generator.s.getGraphics().drawImage(i, ix, Generator.s.getHeight() - 44,
+					Generator.s.getWidth() / 2 + 182, Generator.s.getHeight(),
+					0, 0,
+					182, 22,
+					null);
+			int slot = Generator.s.getWidth() / 2 - 184 + 40 * selectedSlot;
+			Generator.s.getGraphics().drawImage(i, slot, Generator.s.getHeight() - 46, slot + 48, Generator.s.getHeight() - 2, 0, 22, 24, 44, null);
 		});
 
 		int health = 20;
 		int hunger = 20;
 		execute("Drawing bars", () -> {
 			BufferedImage icons = ImageIO.read(new File("pages/icons.png"));
-			drawBar(icons, ix, s.getHeight() - 78, 32, 104, 122, 0, health, false);
-			drawBar(icons, ix + 182 * 2 - 18, s.getHeight() - 78, 32, 104, 122, 54, hunger, true);
+			drawBar(icons, ix, Generator.s.getHeight() - 78, 32, 104, 122, 0, health, false);
+			drawBar(icons, ix + 182 * 2 - 18, Generator.s.getHeight() - 78, 32, 104, 122, 54, hunger, true);
 
-			s.pasteImage(icons, 0, 128, 364, 10, ix, s.getHeight() - 58);
-//			for (int i = 0; i < 10; i++) {
-//				s.getGraphics().drawImage(icons, s.getWidth() / 2 - 182 + i * 16, s.getHeight() - 78,
-//						s.getWidth() / 2 - 182 + i * 16 + 18, s.getHeight() - 60,
-//						32, 0, 50, 18, null);
-//			}
-//			boolean half = health % 2 != 0;
-//			int health = health / 2;
-//			for (int i = 0; i < health; i++) {
-//				s.getGraphics().drawImage(icons, s.getWidth() / 2 - 182 + i * 16, s.getHeight() - 78,
-//						s.getWidth() / 2 - 182 + i * 16 + 18, s.getHeight() - 60,
-//						104, 0, 122, 18, null);
-//			}
-//			if (half) {
-//				s.getGraphics().drawImage(icons, s.getWidth() / 2 - 182 + health * 16, s.getHeight() - 78,
-//						s.getWidth() / 2 - 182 + health * 16 + 10, s.getHeight() - 60,
-//						104, 0, 114, 18, null);
-//			}
+			Generator.s.pasteImage(icons, 0, 128, 364, 10, ix, Generator.s.getHeight() - 58);
 		});
 
 		execute("Drawing items", () -> {
@@ -114,16 +125,16 @@ public class Generator {
 
 			switch (preset) {
 				case "LOBBY":
-					items = new String[] {"compass", "star", null, null, "brewing_stand", null, null, null, "comparator"};
+					items = new String[] {"compass", "nether_star", null, null, "brewing_stand", null, null, null, "comparator"};
 					break;
 				case "BP":
-					items = new String[] {"slimeball", "trail", null, null, null, null, null, "star", "compass"};
+					items = new String[] {"slimeball", "dye_powder_yellow", null, null, null, null, null, "nether_star", "compass"};
 					break;
 				case "KP":
-					items = new String[] {"emerald", "trail", null, null, null, null, null, "star", "compass"};
+					items = new String[] {"emerald", "dye_powder_yellow", null, null, null, null, null, "nether_star", "compass"};
 					break;
 				case "GG":
-					items = new String[] {"slimeball", "ender_eye", "trail", null, null, null, null, "star", "compass"};
+					items = new String[] {"slimeball", "ender_eye", "dye_powder_yellow", null, null, null, null, "nether_star", "compass"};
 					break;
 
 				default:
@@ -136,7 +147,7 @@ public class Generator {
 			for (String item : items) {
 				slot++;
 				if (item == null) continue;
-				ItemRender.draw(s, item, slot, ix);
+				ItemRender.draw(Generator.s, item, slot, ix);
 			}
 
 //			BufferedImage
@@ -154,25 +165,40 @@ public class Generator {
 		execute("Drawing chat", () -> {
 			int lines = chat.size();
 			for (int i = 0; i < lines; i++) {
-				int y = s.getHeight() - 56 - (i + 1) * 18;
-				s.drawBlackRect(4, y, 648, 18);
-				s.drawStringWithShadow(chat.get(i).getText(), 4, y + 2);
+				int y = Generator.s.getHeight() - 56 - (i + 1) * 18;
+				Generator.s.drawBlackRect(4, y, 648, 18);
+				Generator.s.drawStringWithShadow(chat.get(i).getText(), 4, y + 2);
 			}
 			if (chatOpened != 0) {
-				s.drawBlackRect(4, s.getHeight() - 27, s.getWidth() - 8, 24);
+				Generator.s.drawBlackRect(4, Generator.s.getHeight() - 27, Generator.s.getWidth() - 8, 24);
 				if (chatOpened == 2) {
-					s.drawStringWithShadow("_", 8, s.getHeight() - 23);
+					Generator.s.drawStringWithShadow("_", 8, Generator.s.getHeight() - 23);
 				}
 			}
 		});
 
 
 
-		execute("Saving result", () -> s.save(System.currentTimeMillis() + ".png"));
+		execute("Saving result", () -> Generator.s.save(getFileName(outputDir)));
 
 		long end = System.currentTimeMillis();
 
 		System.out.println("Done in " + (end - start) + " ms.");
+
+	}
+
+	private static String getFileName(File outputDir) {
+
+		File[] files = outputDir.listFiles();
+		int number;
+		if (files == null) {
+			outputDir.mkdir();
+			number = 0;
+		} else number = files.length;
+		String s = String.valueOf(number);
+		s = new String(new char[9 - s.length()]).replace('\0', '0') + s;
+		String name = s.substring(0, 3) + "_" + s.substring(3,6) + "_" + s.substring(6, 9);
+		return outputDir.getPath() + "/" + name + ".png";
 
 	}
 
@@ -194,7 +220,8 @@ public class Generator {
 	}
 
 	static void execute(String s, DangerousRunnable r) throws IOException {
-		System.out.print(s + "...  ");
+		String tab = new String(new char[30 - s.length()]).replace('\0', ' ');
+		System.out.print(s + "... " + tab);
 		long start = System.currentTimeMillis();
 		r.run();
 		long end = System.currentTimeMillis();
