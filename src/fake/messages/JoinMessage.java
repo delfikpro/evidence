@@ -1,0 +1,19 @@
+package fake.messages;
+
+import fake.vimeworld.Player;
+import fake.vimeworld.Vime;
+
+public class JoinMessage implements Message {
+
+	private final Player player;
+
+	public JoinMessage(String player) {
+		this.player = Vime.getPlayer(player);
+	}
+
+	@Override
+	public String getText() {
+		return "+ " + Vime.getDisplayName(player) + "§f вошел в лобби";
+	}
+
+}
