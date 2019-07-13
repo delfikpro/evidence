@@ -1,5 +1,6 @@
 .idea/**/
 .idea/
 out/**/
+out/
 env/**/
 env/
