@@ -1,1 +1,2 @@
-java -jar evidence.jar %*pause
+java -jar evidence.jar --screen %*
+pause

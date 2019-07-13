@@ -36,8 +36,12 @@ public class Generator {
 		String path = set.valueOf(outputSpec);
 		File outputDir = new File(path.length() == 0 ? "." : path);
 		if (!outputDir.isDirectory()) {
-			System.out.println("Folder " + outputDir.getAbsolutePath() + " doesn't exist");
-			return;
+			if (outputDir.exists()) {
+				System.out.println("WTF");
+				return;
+			}
+			outputDir.mkdirs();
+			outputDir.mkdir();
 		}
 		List<String> resourcePacks = set.valuesOf(resourcePacksSpec);
 		new ResourcePack(new File("resourcepacks/vanilla.zip"));
