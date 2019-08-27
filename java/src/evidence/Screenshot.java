@@ -140,6 +140,7 @@ public class Screenshot {
 		return 0;
 	}
 
+
 	public int getHeight() {
 		return image.getHeight() / scale;
 	}
@@ -162,7 +163,7 @@ public class Screenshot {
 			for (int yy = 0; yy < h; yy++) {
 				int[] from = r.getPixel(xx, yy, (int[]) null);
 
-				if (from[3] == 0) continue;
+				if (from[0] != 1 || from[1] != 1 || from[2] != 1) continue;
 
 				for (int j = 0; j < 4; j++) {
 					int nx = xx * 2 + j / 2;
@@ -177,6 +178,8 @@ public class Screenshot {
 		}
 
 	}
+
+
 
 	public void drawBlackRect(int x, int y, int w, int h) {
 

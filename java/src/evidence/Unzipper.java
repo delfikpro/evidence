@@ -14,12 +14,7 @@ public class Unzipper {
 
 	public InputStream getFile(String path) throws IOException {
 		ZipEntry entry = zipFile.getEntry(path);
-		try {
-			return zipFile.getInputStream(entry);
-		} catch (NullPointerException ex) {
-			System.out.println(path + " not found");
-			throw ex;
-		}
+		return zipFile.getInputStream(entry);
 	}
 
 }

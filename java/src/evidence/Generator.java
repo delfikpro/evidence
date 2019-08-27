@@ -117,7 +117,7 @@ public class Generator {
 		int health = 20;
 		int hunger = 20;
 		execute("Drawing bars", () -> {
-			BufferedImage icons = ImageIO.read(new File("pages/icons.png"));
+			BufferedImage icons = ImageIO.read(ResourcePack.get("assets/minecraft/textures/gui/icons.png"));
 			drawBar(icons, ix, Generator.s.getHeight() - 78, 32, 104, 122, 0, health, false);
 			drawBar(icons, ix + 182 * 2 - 18, Generator.s.getHeight() - 78, 32, 104, 122, 54, hunger, true);
 

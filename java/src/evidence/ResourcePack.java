@@ -12,12 +12,17 @@ public class ResourcePack {
 	public static final List<ResourcePack> LIST = new ArrayList<>();
 
 	public static InputStream get(String resource) throws IOException {
+		Exception e = null;
 		for (int i = LIST.size() - 1; i >= 0; i--) {
-			ResourcePack rp = LIST.get(i);
-			InputStream f = rp.getResource(resource);
-			if (f != null) return f;
+			try {
+				ResourcePack rp = LIST.get(i);
+				InputStream f = rp.getResource(resource);
+				if (f != null) return f;
+			} catch (Exception ex) {
+				e = ex;
+			}
 		}
-		throw new NoSuchElementException(resource);
+		throw new RuntimeException("Not found " + resource, e);
 	}
 
 	public InputStream getResource(String resource) throws IOException {

@@ -3,7 +3,7 @@ package evidence.messages;
 import evidence.vimeworld.Player;
 import evidence.vimeworld.Vime;
 
-public class PlayerMessage implements evidence.messages.Message {
+public class PlayerMessage implements Message {
 
 	private final String name;
 	private final String message;
