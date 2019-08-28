@@ -29,6 +29,7 @@ public class Image {
 	private final int width;
 
 	private float[] colors = {1, 1, 1, 1};
+	private Filter filter;
 
 	public Image(File file, int scale) throws IOException {
 		this.scale = scale;
@@ -60,6 +61,10 @@ public class Image {
 		setColor(color.r * Q, color.g * Q, color.b * Q, alpha);
 	}
 
+	public void filter(Filter filter) {
+		this.filter = filter;
+	}
+
 	public int getHeight() {
 		return height / scale;
 	}
@@ -76,27 +81,33 @@ public class Image {
 		int xmax = (int) (x2 * scale);
 		int ymax = (int) (y2 * scale);
 
+		int sizeX = xmax - xmin;
+		int sizeY = ymax - ymin;
+
 		int[] colorData = new int[4];
-		for (int i = 0; i < 4; i++) {
-			colorData[i] = color >> 8 * i & 0xFF;
+		for (int channel = 0; channel < 4; channel++) {
+			colorData[channel] = color >> 8 * channel & 0xFF;
 		}
-		System.out.println(Arrays.toString(colorData));
 
 		for (int x = xmin, a = 0; x < xmax; x++, a++) {
 			for (int y = ymin, b = 0; y < ymax; y++, b++) {
 				int offsetImg = (y * width + x) * format;
 
+				double px = (double) a / sizeX;
+				double py = (double) b / sizeY;
+
 				float alphaAbove = 1;
 				boolean alphaGot = false;
-				for (int scope = 3; scope >= 0; scope--) {
-					float c = colorData[scope] * Q * colors[scope];
+				for (int channel = 3; channel >= 0; channel--) {
+					float c = colorData[channel] * Q * colors[channel];
+					if (filter != null) c = filter.filter(px, py, c, channel);
 					float colorAbove = c * alphaAbove;
 					if (!alphaGot) {
 						alphaAbove = c;
 						alphaGot = true;
 					}
-					float colorBelow = data[offsetImg + scope] * Q;
-					data[offsetImg + scope] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
+					float colorBelow = data[offsetImg + channel] * Q;
+					data[offsetImg + channel] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
 
 				}
 			}
@@ -151,27 +162,31 @@ public class Image {
 		for (int x = xmin, a = 0; x < xmax; x++, a++) {
 			for (int y = ymin, b = 0; y < ymax; y++, b++) {
 				int offsetImg = (y * width + x) * format;
-				int rayX = (int) ((double) a / sizeX * tw);
-				int rayY = (int) ((double) b / sizeY * th);
+				double px = (double) a / sizeX;
+				double py = (double) b / sizeY;
+				int rayX = (int) (px * tw);
+				int rayY = (int) (py * th);
 				int offsetTxt = (rayY * tw + rayX) * ff;
 
 				if (ff < 4) {
-					for (int scope = 0; scope < ff || scope < format; scope++) {
-						data[offsetImg + scope] = texture[offsetTxt + scope];
+					for (int channel = 0; channel < ff || channel < format; channel++) {
+						data[offsetImg + channel] = texture[offsetTxt + channel];
 					}
 					return;
 				}
 				float alphaAbove = 1;
 				boolean alphaGot = false;
-				for (int scope = 3; scope >= 0; scope--) {
-					float color = texture[offsetTxt + scope] * Q * colors[scope];
+				// channel: 3 = alpha, 2 = blue, 1 = green, 0 = red
+				for (int channel = 3; channel >= 0; channel--) {
+					float color = texture[offsetTxt + channel] * Q * colors[channel];
+					if (filter != null) color = filter.filter(px, py, color, channel);
 					float colorAbove = color * alphaAbove;
 					if (!alphaGot) {
 						alphaAbove = color;
 						alphaGot = true;
 					}
-					float colorBelow = data[offsetImg + scope] * Q;
-					data[offsetImg + scope] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
+					float colorBelow = data[offsetImg + channel] * Q;
+					data[offsetImg + channel] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
 
 				}
 			}

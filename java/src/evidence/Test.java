@@ -85,7 +85,7 @@ public class Test {
 		});
 
 		execute("Drawing hand", () -> {
-			String handPath = "pages/hand" + s.getWidth() + ".png";
+			String handPath = "pages/hand" + s.getWidth() * s.scale + ".png";
 			File hand = new File(handPath);
 			if (!hand.exists()) {
 				System.out.println("Screenshot's width is NOT SUPPORTED! Hand will be distorted!");
@@ -108,7 +108,7 @@ public class Test {
 // ToDo: CrossHair
 
 
-
+		ItemRender.draw(s, "nether_star", 0, 100, 4);
 
 
 		int ix = s.getWidth() / 2 - 91;
@@ -171,7 +171,7 @@ public class Test {
 			//			s.getGraphics().drawImage(brewing, ix + 6 + 40 * 4, iy, null);
 			//			s.pasteImage(compass, 0, 32 * compassPos, 32, 32, ix + 6, iy);
 		});
-		execute("Drawing chat", () -> {
+		if (false) execute("Drawing chat", () -> {
 			int lines = chat.size();
 			for (int i = 0; i < lines; i++) {
 				int y = s.getHeight() - 28 - (i + 1) * 9;
