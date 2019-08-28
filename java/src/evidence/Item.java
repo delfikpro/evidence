@@ -4,6 +4,6 @@ import java.awt.image.BufferedImage;
 
 public interface Item {
 
-	void draw(Screenshot s, BufferedImage i, int x, int y);
+	void draw(Image s, BufferedImage i, int x, int y);
 
 }

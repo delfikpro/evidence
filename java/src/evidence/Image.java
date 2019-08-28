@@ -7,6 +7,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 
@@ -36,9 +37,9 @@ public class Image {
 		this.g = base.createGraphics();
 		this.r = base.getRaster();
 		this.height = r.getHeight();
-		System.out.println(base.getType());
 		this.width = r.getWidth();
 		format = r.getNumBands();
+		System.out.println("Image type: " + base.getType() + ", width: " + width + ", height: " + height + ", numbands: " + format);
 		this.data = new int[this.format * height * width];
 		r.getPixels(0, 0, width, height, data);
 	}
@@ -60,28 +61,40 @@ public class Image {
 	}
 
 	public int getHeight() {
-		return height >> scale;
+		return height / scale;
 	}
 
 	public int getWidth() {
-		return width >> scale;
+		return width / scale;
 	}
 
-	public void rect(int x1, int y1, int x2, int y2, int color) {
+	public void rect(float x1, float y1, float x2, float y2, int color) {
 
-		byte[] colorData = new byte[4];
+
+		int xmin = (int) (x1 * scale);
+		int ymin = (int) (y1 * scale);
+		int xmax = (int) (x2 * scale);
+		int ymax = (int) (y2 * scale);
+
+		int[] colorData = new int[4];
 		for (int i = 0; i < 4; i++) {
-			colorData[i] = (byte) (color >> 8 * i & 0xFF);
+			colorData[i] = color >> 8 * i & 0xFF;
 		}
+		System.out.println(Arrays.toString(colorData));
 
-		for (int x = x1, a = 0; x < x2; x++, a++) {
-			for (int y = y1, b = 0; y < y2; y++, b++) {
+		for (int x = xmin, a = 0; x < xmax; x++, a++) {
+			for (int y = ymin, b = 0; y < ymax; y++, b++) {
 				int offsetImg = (y * width + x) * format;
 
-				float alphaAbove = -1;
+				float alphaAbove = 1;
+				boolean alphaGot = false;
 				for (int scope = 3; scope >= 0; scope--) {
-					if (alphaAbove == -1) alphaAbove = colorData[scope] * Q;
-					float colorAbove = colorData[scope] * Q * alphaAbove;
+					float c = colorData[scope] * Q * colors[scope];
+					float colorAbove = c * alphaAbove;
+					if (!alphaGot) {
+						alphaAbove = c;
+						alphaGot = true;
+					}
 					float colorBelow = data[offsetImg + scope] * Q;
 					data[offsetImg + scope] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
 
@@ -92,7 +105,12 @@ public class Image {
 	}
 
 	public void pasteFull(Raster texture, float x1, float y1, float x2, float y2) {
-		draw(texture, 0, 0, 1, 1, x1, y1, x2, y2, 1);
+		draw(texture, 0, 0, 1, 1, x1, y1, x2, y2);
+	}
+
+	public void drawMCFormat(Raster texture, int tx1, int ty1, int tx2, int ty2, float x1, float y1, float x2, float y2) {
+		double p = 0x1P-8;
+		draw(texture, tx1 * p, ty1 * p, tx2 * p, ty2 * p, x1, y1, x2, y2);
 	}
 
 	/**
@@ -106,9 +124,8 @@ public class Image {
 	 * @param y1 координата Y на изображении, на которой будет левый верхний угол текстурки
 	 * @param x2 координата X на изображении, на которой будет правый нижний угол текстурки
 	 * @param y2 координата Y на изображении, на которой будет правый нижний угол текстурки
-	 * @param trf множитель размера текстурки
 	 */
-	public void draw(Raster t, double u1, double v1, double u2, double v2, float x1, float y1, float x2, float y2, double trf) {
+	public void draw(Raster t, double u1, double v1, double u2, double v2, float x1, float y1, float x2, float y2) {
 
 		int ff = t.getNumBands();
 
@@ -121,8 +138,6 @@ public class Image {
 		int th = (int) (v2 * h) - ty;
 		int[] texture = new int[tw * th * ff];
 		t.getPixels(tx, ty, tw, th, texture);
-
-		double factor = scale * trf;
 
 		int xmin = (int) (x1 * scale);
 		int ymin = (int) (y1 * scale);
@@ -146,12 +161,15 @@ public class Image {
 					}
 					return;
 				}
-				float alphaAbove = -1;
+				float alphaAbove = 1;
+				boolean alphaGot = false;
 				for (int scope = 3; scope >= 0; scope--) {
 					float color = texture[offsetTxt + scope] * Q * colors[scope];
-//					System.out.println("scope = " + scope + ", color = " + texture[offsetTxt + scope]);
-					if (alphaAbove == -1) alphaAbove = color;
 					float colorAbove = color * alphaAbove;
+					if (!alphaGot) {
+						alphaAbove = color;
+						alphaGot = true;
+					}
 					float colorBelow = data[offsetImg + scope] * Q;
 					data[offsetImg + scope] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
 
@@ -167,6 +185,7 @@ public class Image {
 	}
 
 	public void save(File file) throws IOException {
+		flush();
 		ImageIO.write(base, "PNG", file);
 	}
 

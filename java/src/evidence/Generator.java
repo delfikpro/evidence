@@ -151,7 +151,7 @@ public class Generator {
 			for (String item : items) {
 				slot++;
 				if (item == null) continue;
-				ItemRender.draw(Generator.s, item, slot, ix);
+//				ItemRender.draw(Generator.s, item, slot, ix);
 			}
 
 //			BufferedImage

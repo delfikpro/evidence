@@ -16,19 +16,19 @@ public class Font {
 		bint = image;
 	}
 
-	public static void drawStringWithShadow(String string, int x, int y) throws IOException {
-		drawString(string, x + 1, y + 1, 4);
+	public static void drawStringWithShadow(String string, float x, float y) throws IOException {
+		drawString(string, x + 0.5F, y + 0.5F, 4);
 		drawString(string, x, y);
 	}
 
-	public static void drawString(String s, int x, int y) throws IOException {
+	public static void drawString(String s, float x, float y) throws IOException {
 		drawString(s, x, y, 1);
 	}
-	public static void drawString(String s, int x, int y, int colorFactor) throws IOException {
+	public static void drawString(String s, float x, float y, int colorFactor) throws IOException {
 
 		boolean coloring = false;
 		Color color = Color.WHITE;
-		bint.setColor(1, 1, 1, 1);
+		color(color, colorFactor);
 		boolean bold = false;
 		boolean underline = false;
 		for (char c : s.toCharArray()) {
@@ -51,27 +51,34 @@ public class Font {
 					int code = "0123456789abcdef".indexOf(c);
 					coloring = false;
 					color = code < 0 ? Color.WHITE : Color.values()[code];
-					if (color == Color.GOLD && colorFactor != 1) color = Color.SHADOW_GOLD;
-					bint.setColor(color, 1);
-					float f = 1f / colorFactor;
-					bint.permuteColor(f, f, f, 1);
+					color(color, colorFactor);
 					continue;
 				}
 			}
 
-			int dx = x;
-			if (bold) drawChar(c, x++, y, color, colorFactor);
+			float dx = x;
+			if (bold) {
+				drawChar(c, x, y, color, colorFactor);
+				x += 0.5f;
+			}
 			x += drawChar(c, x, y, color, colorFactor);
 			if (underline) {
-				int o = colorFactor == 1 ? 0 : 1;
+				float o = colorFactor == 1 ? 0 : 0.5f;
 				int rgb = new java.awt.Color(color.r / colorFactor, color.g / colorFactor, color.b / colorFactor).getRGB();
-				bint.rect(dx - 2 + o, y + 16 + o, dx - 2 + o + 10, y + 16 + o + 2, rgb);
+				bint.rect(dx - 1 + o, y + 8 + o, dx - 1 + o + 5, y + 8 + o + 1, rgb);
 			}
 		}
 		bint.setColor(1, 1, 1, 1);
 	}
 
-	public static int drawChar(char c, float x, float y, Color color, int colorFactor) throws IOException {
+	private static void color(Color color, int factor) {
+		if (color == Color.GOLD && factor != 1) color = Color.SHADOW_GOLD;
+		bint.setColor(color, 1);
+		float f = 1f / factor;
+		bint.permuteColor(f, f, f, 1);
+	}
+
+	public static float drawChar(char c, float x, float y, Color color, int colorFactor) throws IOException {
 
 		if (c == 32) return 4;
 
@@ -81,11 +88,11 @@ public class Font {
 		int row = c / 16 * 16;
 		int offset = glyph >>> 4 & 0b1111;
 		int col = c % 16 * 16 + offset;
-		int width = (glyph & 15) + 1 - offset;
+		float width = ((glyph & 15) + 1 - offset) / 2f;
 		// 1 / 256
 		double part = 0X1P-8;
-		bint.draw(image.getRaster(), col * part, row * part, (col + width) * part, (row + 16) * part, x, y, x + width,y + 16, 1);
-		return width + 2;
+		bint.draw(image.getRaster(), col * part, row * part, (col + width * 2) * part, (row + 16) * part, x, y, x + width,y + 8);
+		return width + 1;
 
 	}
 
