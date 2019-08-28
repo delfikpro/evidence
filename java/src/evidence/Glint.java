@@ -64,7 +64,7 @@ public class Glint implements Filter {
 
 			int left = (int) (rx * 8) + OZO;
 
-			if (left < 0) left = 64 - left;
+			if (left < 0) left = 64 + left;
 			float color1 = DATA[left] * Image.Q;
 			float color2 = DATA[left + 1] * Image.Q;
 
@@ -90,7 +90,7 @@ public class Glint implements Filter {
 
 		float baklazhan = (COLOR >> 8 * (2 - channel) & 0xFF) * Image.Q;
 
-		float v = color + ozo * ulu * baklazhan * baklazhan;
+		float v = color + (ozo + ulu) * baklazhan * color;
 		if (v > 1) v = 1;
 		return v;
 
