@@ -23,7 +23,7 @@ public class Glint implements Filter {
 			111, 87 , 95 , 103, 108, 148, 152, 75 ,
 
 			// Расширение для зацикливания
-			104, 49 , 91 , 56 , 79 , 98 , 109, 89
+			104, 49 , 91 , 56 , 79 , 98 , 109, 89, 86, 113
 	};
 
 	/**
@@ -90,10 +90,7 @@ public class Glint implements Filter {
 
 		float baklazhan = (COLOR >> 8 * (2 - channel) & 0xFF) * Image.Q;
 
-//		float ozoIter = (1 - ozo) * color + baklazhan * ozo;
-//		float uluIter = (1 - ulu) * ozoIter + baklazhan * ulu;
-		float v = color * color + baklazhan * ozo;
-		float d = v * v + baklazhan * ulu;
+		float v = color + ozo * ulu * baklazhan * baklazhan;
 		if (v > 1) v = 1;
 		return v;
 
