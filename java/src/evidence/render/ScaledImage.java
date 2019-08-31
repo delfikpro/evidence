@@ -1,4 +1,4 @@
-package evidence;
+package evidence.render;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -7,11 +7,10 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 
-public class Image {
+public class ScaledImage {
 
 	/**
 	 * Константа Q, приблизительно равная 1/255, но немного превышающая её.
@@ -31,7 +30,7 @@ public class Image {
 	private float[] colors = {1, 1, 1, 1};
 	private Filter filter;
 
-	public Image(File file, int scale) throws IOException {
+	public ScaledImage(File file, int scale) throws IOException {
 		this.scale = scale;
 		BufferedImage img = ImageIO.read(file);
 		this.base = img.getType() == TYPE_4BYTE_ABGR ? img : Util.convertColorspace(img, TYPE_4BYTE_ABGR);
@@ -40,7 +39,6 @@ public class Image {
 		this.height = r.getHeight();
 		this.width = r.getWidth();
 		format = r.getNumBands();
-		System.out.println("Image type: " + base.getType() + ", width: " + width + ", height: " + height + ", numbands: " + format);
 		this.data = new int[this.format * height * width];
 		r.getPixels(0, 0, width, height, data);
 	}
@@ -100,13 +98,13 @@ public class Image {
 				boolean alphaGot = false;
 				for (int channel = 3; channel >= 0; channel--) {
 					float c = colorData[channel] * Q * colors[channel];
-					if (filter != null) c = filter.filter(px, py, c, channel);
+					float colorBelow = data[offsetImg + channel] * Q;
+					if (filter != null) c = filter.filter(px, py, c, channel, colorBelow);
 					float colorAbove = c * alphaAbove;
 					if (!alphaGot) {
 						alphaAbove = c;
 						alphaGot = true;
 					}
-					float colorBelow = data[offsetImg + channel] * Q;
 					data[offsetImg + channel] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
 
 				}
@@ -115,18 +113,18 @@ public class Image {
 
 	}
 
-	public void pasteFull(Raster texture, float x1, float y1, float x2, float y2) {
+	public void pasteFull(BufferedImage texture, float x1, float y1, float x2, float y2) {
 		draw(texture, 0, 0, 1, 1, x1, y1, x2, y2);
 	}
 
-	public void drawMCFormat(Raster texture, int tx1, int ty1, int tx2, int ty2, float x1, float y1, float x2, float y2) {
+	public void drawMCFormat(BufferedImage texture, int tx1, int ty1, int tx2, int ty2, float x1, float y1, float x2, float y2) {
 		double p = 0x1P-8;
 		draw(texture, tx1 * p, ty1 * p, tx2 * p, ty2 * p, x1, y1, x2, y2);
 	}
 
 	/**
 	 * Рейтресинг текстурки на изображение
-	 * @param t Текстутра (bufferedimage.getRaster())
+	 * @param img Текстутра (bufferedimage)
 	 * @param u1 левая координата X в процентах от общей ширины
 	 * @param v1 верхняя координата Y в процентах от общей высоты
 	 * @param u2 правая координата X в процентах от общей ширины
@@ -136,37 +134,39 @@ public class Image {
 	 * @param x2 координата X на изображении, на которой будет правый нижний угол текстурки
 	 * @param y2 координата Y на изображении, на которой будет правый нижний угол текстурки
 	 */
-	public void draw(Raster t, double u1, double v1, double u2, double v2, float x1, float y1, float x2, float y2) {
+	public void draw(BufferedImage img, double u1, double v1, double u2, double v2, float x1, float y1, float x2, float y2) {
 
+		Raster t = img.getRaster();
 		int ff = t.getNumBands();
 
 		int w = t.getWidth();
 		int h = t.getHeight();
 
-		int tx = (int) (u1 * w);
-		int ty = (int) (v1 * h);
-		int tw = (int) (u2 * w) - tx;
-		int th = (int) (v2 * h) - ty;
-		int[] texture = new int[tw * th * ff];
-		t.getPixels(tx, ty, tw, th, texture);
+		double tx = (int) (u1 * w);
+		double ty = (int) (v1 * h);
+		double tw = (int) (u2 * w) - tx;
+		double th = (int) (v2 * h) - ty;
+		int[] texture = new int[(int) (tw * th * ff)];
+		t.getPixels((int) tx, (int) ty, (int) tw, (int) th, texture);
 
-		int xmin = (int) (x1 * scale);
-		int ymin = (int) (y1 * scale);
-		int xmax = (int) (x2 * scale);
-		int ymax = (int) (y2 * scale);
+		double xmin = x1 * scale;
+		double ymin = y1 * scale;
+		double xmax = x2 * scale;
+		double ymax = y2 * scale;
 
-		int sizeX = xmax - xmin;
-		int sizeY = ymax - ymin;
+		double sizeX = xmax - xmin;
+		double sizeY = ymax - ymin;
 
 
-		for (int x = xmin, a = 0; x < xmax; x++, a++) {
-			for (int y = ymin, b = 0; y < ymax; y++, b++) {
-				int offsetImg = (y * width + x) * format;
-				double px = (double) a / sizeX;
-				double py = (double) b / sizeY;
-				int rayX = (int) (px * tw);
-				int rayY = (int) (py * th);
-				int offsetTxt = (rayY * tw + rayX) * ff;
+		for (double x = xmin, a = 0; x < xmax; x++, a++) {
+			pixelIterating:
+			for (double y = ymin, b = 0; y < ymax; y++, b++) {
+				int offsetImg = (int) ((y * width + x) * format);
+				double px = a / sizeX;
+				double py = b / sizeY;
+				double rayX = (float) (px * tw);
+				double rayY = (float) (py * th);
+				int offsetTxt = (int) (((int) rayY * tw + (int) rayX) * ff);
 
 				if (ff < 4) {
 					for (int channel = 0; channel < ff || channel < format; channel++) {
@@ -179,13 +179,14 @@ public class Image {
 				// channel: 3 = alpha, 2 = blue, 1 = green, 0 = red
 				for (int channel = 3; channel >= 0; channel--) {
 					float color = texture[offsetTxt + channel] * Q * colors[channel];
-					if (filter != null) color = filter.filter(px, py, color, channel);
+					float colorBelow = data[offsetImg + channel] * Q;
+					if (filter != null) color = filter.filter(px, py, color, channel, colorBelow);
 					float colorAbove = color * alphaAbove;
 					if (!alphaGot) {
 						alphaAbove = color;
+						if (alphaAbove == 0 && filter == null) continue pixelIterating;
 						alphaGot = true;
 					}
-					float colorBelow = data[offsetImg + channel] * Q;
 					data[offsetImg + channel] = (int) ((colorAbove + colorBelow * (1 - alphaAbove)) * 255);
 
 				}
@@ -200,8 +201,14 @@ public class Image {
 	}
 
 	public void save(File file) throws IOException {
+		save(file, this.format);
+	}
+	public void save(File file, int format) throws IOException {
 		flush();
-		ImageIO.write(base, "PNG", file);
+		BufferedImage img;
+		if (format != this.format) img = Util.convertColorspace(base, format);
+		else img = base;
+		ImageIO.write(img, "PNG", file);
 	}
 
 

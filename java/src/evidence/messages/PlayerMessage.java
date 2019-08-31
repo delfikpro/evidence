@@ -17,7 +17,7 @@ public class PlayerMessage implements Message {
 
 	@Override
 	public String getText() {
-		return player.getTag() + Vime.getDisplayName(player) + "§7: §f" + message;
+		return player.getTag() + Vime.getDisplayName(player) + "§7: " + (player.getRank() == Player.Rank.CHIEF || player.getRank() == Player.Rank.ADMIN ? "§a" : "§f") + message;
 	}
 
 	@Override

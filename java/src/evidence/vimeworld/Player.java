@@ -1,6 +1,6 @@
 package evidence.vimeworld;
 
-import evidence.Color;
+import evidence.render.Color;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,18 +47,27 @@ public class Player {
         MODER("Модератор", "§9[Модер]", 4, Color.BLUE),
         WARDEN("Проверенный модератор", "§9[Модер]", 4, Color.BLUE),
         CHIEF("Главный модератор", "§9[Гл. модер]", 4, Color.BLUE),
-        ADMIN("Главный админ", "§3§l[Гл. админ]", 4, Color.CYAN);
+        ADMIN("Главный админ", "§3§l[Гл. админ]", 4, Color.CYAN, true);
 
         private final String title, prefix;
         private final int multiplier;
 		private final Color color;
+		private final boolean bold;
 
 		Rank(String title, String prefix, int multiplier, Color color) {
+			this(title, prefix, multiplier, color, false);
+		}
+		Rank(String title, String prefix, int multiplier, Color color, boolean bold) {
             this.title = title;
             this.multiplier = multiplier;
             this.prefix = prefix;
             this.color = color;
+            this.bold = bold;
         }
+
+		public boolean isBold() {
+			return bold;
+		}
 
 		public int getMultiplier() {
 			return multiplier;
@@ -71,6 +80,10 @@ public class Player {
 
 		public Color getColor() {
         	return color;
+		}
+
+		public String getStyle() {
+			return color.toString() + (isBold() ? "§l" : "");
 		}
 	}
     

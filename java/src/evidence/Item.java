@@ -1,9 +1,11 @@
 package evidence;
 
+import evidence.render.ScaledImage;
+
 import java.awt.image.BufferedImage;
 
 public interface Item {
 
-	void draw(Image s, BufferedImage i, int x, int y);
+	void draw(ScaledImage s, BufferedImage i, int x, int y);
 
 }

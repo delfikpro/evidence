@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact name="evidence-release">
+    <output-path>$PROJECT_DIR$/out/</output-path>
+    <root id="root">
+      <element id="archive" name="release.zip">
+        <element id="artifact" artifact-name="evidence-jar" />
+        <element id="directory" name="resourcepacks">
+          <element id="file-copy" path="$PROJECT_DIR$/env/resourcepacks/vanilla.zip" />
+        </element>
+        <element id="file-copy" path="$PROJECT_DIR$/env/evidence.yml" />
+        <element id="file-copy" path="$PROJECT_DIR$/env/start.bat" />
+        <element id="directory" name="pages">
+          <element id="file-copy" path="$PROJECT_DIR$/env/pages/hand1000.png" />
+          <element id="file-copy" path="$PROJECT_DIR$/env/pages/hand1920.png" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

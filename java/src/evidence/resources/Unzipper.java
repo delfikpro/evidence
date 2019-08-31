@@ -1,4 +1,4 @@
-package evidence;
+package evidence.resources;
 
 import java.io.*;
 import java.util.zip.ZipEntry;

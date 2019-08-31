@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="evidence-jar">
+    <output-path>$PROJECT_DIR$/env</output-path>
+    <root id="archive" name="evidence-jar.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/java/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="Evidence" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/java/lib/json.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

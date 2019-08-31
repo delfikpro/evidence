@@ -1,7 +1,7 @@
-package evidence;
+package evidence.render;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import evidence.resources.ResourcePack;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +10,9 @@ public class Font {
 
 	static final byte[] glyphs = new byte[65536];
 	static {try {initGlyphs();} catch (Exception ignored) {}}
-	private static Image bint;
+	private static ScaledImage bint;
 
-	public static void bind(Image image) {
+	public static void bind(ScaledImage image) {
 		bint = image;
 	}
 
@@ -64,7 +64,7 @@ public class Font {
 			x += drawChar(c, x, y, color, colorFactor);
 			if (underline) {
 				float o = colorFactor == 1 ? 0 : 0.5f;
-				int rgb = new java.awt.Color(color.r / colorFactor, color.g / colorFactor, color.b / colorFactor).getRGB();
+				int rgb = new java.awt.Color(color.r, color.g, color.b).getRGB();
 				bint.rect(dx - 1 + o, y + 8 + o, dx - 1 + o + 5, y + 8 + o + 1, rgb);
 			}
 		}
@@ -91,7 +91,7 @@ public class Font {
 		float width = ((glyph & 15) + 1 - offset) / 2f;
 		// 1 / 256
 		double part = 0X1P-8;
-		bint.draw(image.getRaster(), col * part, row * part, (col + width * 2) * part, (row + 16) * part, x, y, x + width,y + 8);
+		bint.draw(image, col * part, row * part, (col + width * 2) * part, (row + 16) * part, x, y, x + width,y + 8);
 		return width + 1;
 
 	}
@@ -101,12 +101,7 @@ public class Font {
 	private static BufferedImage getPage(int page) throws IOException {
 		if (pages[page] != null) return pages[page];
 		String name = String.format("assets/minecraft/textures/font/unicode_page_%02x.png", page);
-		BufferedImage one = ImageIO.read(ResourcePack.get(name));
-		BufferedImage img = new BufferedImage(one.getWidth(), one.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = img.createGraphics();
-		g.drawImage(one, 0, 0, 256, 256, 0, 0, 256, 256, null);
-		g.dispose();
-		return pages[page] = img;
+		return pages[page] = ResourcePack.getTexture(name);
 	}
 
 	private static void initGlyphs() throws IOException {

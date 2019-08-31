@@ -1,15 +1,25 @@
-package evidence;
+package evidence.resources;
 
+import evidence.render.Util;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 
 public class ResourcePack {
 
 	public static final List<ResourcePack> LIST = new ArrayList<>();
+
+	public static BufferedImage getTexture(String resource) throws IOException {
+		BufferedImage img = ImageIO.read(get(resource));
+		return img.getType() == TYPE_4BYTE_ABGR ? img : Util.convertColorspace(img, TYPE_4BYTE_ABGR);
+	}
 
 	public static InputStream get(String resource) throws IOException {
 		Exception e = null;

@@ -1,4 +1,4 @@
-package evidence;
+package evidence.render;
 
 public class Glint implements Filter {
 
@@ -46,8 +46,16 @@ public class Glint implements Filter {
 	public static final double uluSin = Math.sin(10.0 / 180.0 * Math.PI);
 	public static final double uluCos = Math.cos(10.0 / 180.0 * Math.PI);
 
+
+	/**
+	 *
+	 * Майнкрафт использует glBlendFunc(GL_SRC_COLOR, GL_ONE),
+	 * что по идее должно равнятся srcColor * srcColor + dstColor * 1,
+	 * где srcColor - цвет того, что мы рисуем (узор зачарования), а dstColor - цвет того, куда мы рисуем.
+	 *
+	 */
 	@Override
-	public float filter(double x, double y, float color, int channel) {
+	public float filter(double x, double y, float color, int channel, float dstColor) {
 
 		// Игнорим прозрачность
 		if (channel == 3) return color;
@@ -65,8 +73,8 @@ public class Glint implements Filter {
 			int left = (int) (rx * 8) + OZO;
 
 			if (left < 0) left = 64 + left;
-			float color1 = DATA[left] * Image.Q;
-			float color2 = DATA[left + 1] * Image.Q;
+			float color1 = DATA[left] * ScaledImage.Q;
+			float color2 = DATA[left + 1] * ScaledImage.Q;
 
 			ozo = (float) ((color2 - color1) * r + color1);
 
@@ -81,20 +89,26 @@ public class Glint implements Filter {
 			int left = (int) (rx * 8) + ULU;
 
 			if (left < 0) left = 64 - left;
-			float color1 = DATA[left] * Image.Q;
-			float color2 = DATA[left + 1] * Image.Q;
+			float color1 = DATA[left] * ScaledImage.Q;
+			float color2 = DATA[left + 1] * ScaledImage.Q;
 
 			ulu = (float) ((color2 - color1) * r + color1);
 
 		}
 
-		float baklazhan = (COLOR >> 8 * (2 - channel) & 0xFF) * Image.Q;
+		float baklazhan = (COLOR >> 8 * (2 - channel) & 0xFF) * ScaledImage.Q;
 
-		float v = color + (ozo + ulu) * baklazhan * color;
+//		float v = color + (ozo + ulu) * baklazhan * baklazhan * color;
+//		float v = baklazhan * (ozo + ulu) / 2 + color;
+		float colorOzo = baklazhan * ozo;
+		float colorUlu = baklazhan * ozo;
+		float v = colorOzo * colorOzo + color;
+		v += colorUlu * colorUlu;
 		if (v > 1) v = 1;
 		return v;
 
 
 	}
+
 
 }

@@ -13,7 +13,7 @@ public class JoinMessage implements Message {
 
 	@Override
 	public String getText() {
-		return "+ " + Vime.getDisplayName(player) + "§f вошел в лобби";
+		return "+ " + Vime.getDisplayName(player) + "§f вошел в лобби!";
 	}
 
 }

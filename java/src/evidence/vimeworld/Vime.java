@@ -7,9 +7,14 @@ public class Vime {
 
 	private static final Map<String, Player> playercache = new HashMap<>();
 	private static final Map<Integer, Guild> guildcache = new HashMap<>();
-	public static Map<String, String> prefixes;
+	public static Map<String, String> prefixes = new HashMap<>();
 
 	public static Player getPlayer(String name) {
+		if (name.contains("[")) {
+			String[] ss = name.split(" ");
+			name = ss[1];
+			prefixes.put(name.toLowerCase(), ss[0]);
+		}
 		return playercache.computeIfAbsent(name.toLowerCase(), API::getPlayer);
 	}
 
@@ -28,10 +33,11 @@ public class Vime {
 	}
 
 	public static String getDisplayName(Player player) {
-		if (player.getRank() != Player.Rank.IMMORTAL)
-			return player.getRank() != Player.Rank.PLAYER ? player.getRank() + " " + player.getName() : ("§7" + player.getName());
-		String body = prefixes.getOrDefault(player.getName().toLowerCase(), "I");
-		return "§d[" + body + "] " + player.getName();
+		String prefix = prefixes.getOrDefault(player.getName().toLowerCase(), null);
+		if (prefix == null) prefix = player.getRank() != Player.Rank.PLAYER ? player.getRank() + " " : "§7";
+		else prefix += " ";
+		if (!prefix.contains("§")) prefix = player.getRank().getStyle() + prefix;
+		return prefix + player.getName();
 	}
 
 	public static String getSimpleName(String s) {

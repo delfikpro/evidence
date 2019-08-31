@@ -1,4 +1,4 @@
-package evidence;
+package evidence.render;
 
 public enum Color {
 
@@ -19,13 +19,9 @@ public enum Color {
 	YELLOW('e', 0xff, 0xff, 0x55),
 	WHITE ('f', 0xff, 0xff, 0xff),
 
+	// Цвет тени &6 отличается от алгоритма.
 	SHADOW_GOLD('!', 0xaa, 0xaa, 0x00);
 
-//	static final Color[] array = new Color[16];
-//	static {
-//		for (Color color : values()) array["0123456789abcdef".indexOf(color.c)] = color;
-//		for (int i = 0; i < array.length; i++) if (array[i] == null) array[i] = WHITE;
-//	}
 
 	final int r, g, b;
 	final char c;

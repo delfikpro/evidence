@@ -25,7 +25,7 @@ public final class API {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String result = reader.readLine();
 			reader.close();
-			if (result.equals("[]") || result.startsWith("{\"error\":")) throw new IllegalArgumentException();
+			if (result.equals("[]") || result.startsWith("{\"error\":")) throw new IllegalArgumentException(address + " returned " + result);
 			return result;
 		} catch (IllegalArgumentException ex) {
 		  throw ex;
@@ -59,6 +59,8 @@ public final class API {
 			JSONArray array = new JSONArray(rawJson);
 			return new evidence.vimeworld.Player(array.getJSONObject(0));
 		} catch (IllegalArgumentException e) {
+			System.out.println("PLAYER '" + player + "' NOT FOUND");
+			e.printStackTrace();
 			return null;
 		} catch (JSONException e) {
 			throw new RuntimeException(e);

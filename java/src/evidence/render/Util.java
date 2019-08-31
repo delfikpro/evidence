@@ -1,11 +1,18 @@
-package evidence;
+package evidence.render;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.io.File;
+import java.io.IOException;
 
 public class Util {
 
-
+	public static void main(String[] args) throws IOException {
+		BufferedImage read = ImageIO.read(new File("env/resourcepacks/icons.png"));
+		System.out.println("TYPE: " + read.getType());
+		ImageIO.write(convertColorspace(read, BufferedImage.TYPE_4BYTE_ABGR), "PNG", new File("env/resourcepacks/icons2.png"));
+	}
 
 	public static BufferedImage convertColorspace(BufferedImage image, int newType) {
 
