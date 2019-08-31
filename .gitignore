@@ -1,5 +1,5 @@
-env/**/
-env/
+env/evidences/
+env/*.jar
 
 
 # User-specific stuff

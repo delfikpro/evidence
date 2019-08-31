@@ -1,0 +1,66 @@
+
+# Имя игрока, от лица которого будет сделана подстава
+name: 'DelfikPro'
+
+# Количество коинов у игрока (Значения больше 2ккк лучше не ставить, всё сломается)
+coins: 107333
+
+# Название сервера, в котором находится игрок
+server: 'LOBBY_1'
+
+# Направление стрелки компаса (0-31)
+compass-target: 29
+
+# Номер выбранного слота (0-8)
+slot: 2
+
+# Пресет (LOBBY|BP|KP|GG)
+# Либо кастомный 'compass|bone|-|-|-|-|emerald|-|emerald'
+preset: 'LOBBY'
+
+# Открытие чата
+# 0 - Чат закрыт
+# 1 - Чат открыт
+# 2 - Чат открыт и в нём мигнул курсор (_)
+chatOpened: 2
+
+
+
+
+# Сообщения в чате
+chat:
+- 'astrologistics: Ну я окупился спасиба' 
+- 'Dark6mix: а утебя какой лвл' 
+- 'DevRec: xolovka' 
+- 'DevRec: Скин Defib' 
+- 'Игрок &exolovka &fоткрыл &d&lМистический сундук' 
+- '+ [ec] Angelina39' 
+- 'poking: давай' 
+- 'Dark6mix: уменя 18' 
+- 'astrologistics: .freind list' 
+- 'DelfikPro: лолкекчебурек' 
+- '[Holy] necto56: ну разбег с этих двух блоков' 
+- 'Duesta: стой' 
+- 'Dark6mix: я раньше был випом' 
+- 'mistakee: что' 
+- 'necto56: я пробывал это тяжело' 
+- 'astrologistics: все раньше былпип' 
+- 'Duesta: это пойдём' 
+- '+ [LND] WatEnig_YT' 
+- 'DevRec: Кто оценит мой хертек скин?' 
+- 'F2 2019-08-31_01.33.41'
+
+# Включать и выключать отдельные модули
+modules:
+  hand:       true
+  texteria:   true
+  crosshair:  true
+  hotbar:     true
+  indicators: true
+  items:      true
+  chat:       true
+
+
+resourcepacks: []
+# Образец:
+# resourcepacks: [rodrigo.zip, lmao.zip, essssr.zip]
