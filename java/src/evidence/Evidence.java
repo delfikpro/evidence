@@ -227,23 +227,4 @@ public class Evidence {
 		void run() throws IOException;
 	}
 
-
-	public static void notmain() throws IOException {
-
-		new ResourcePack(new File("resourcepacks/vanilla.zip"));
-		ScaledImage i = new ScaledImage(new File("example01.png"), 2);
-
-		BufferedImage t = ImageIO.read(new File("glass_lime.png"));
-		System.out.println(t.getType());
-		System.out.println(t.getRaster().getNumBands());
-		Font.bind(i);
-		i.draw(t, 0, 0, 1, 0.5, 40, 40, 500, 500);
-		Font.drawStringWithShadow("§6[G] §7<§f-CHP-§7> §d[H2W] Fedos534 §7[§8Ниггер §6LVL 9§7]: §fДелфик", 10, 10);
-		i.flush();
-		File file = new File(System.currentTimeMillis() + ".png");
-		i.save(file);
-		System.out.println("saved to " + file.getName());
-
-	}
-
 }
