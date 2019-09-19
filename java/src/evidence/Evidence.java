@@ -31,6 +31,7 @@ public class Evidence {
 
 		System.out.println("Evidence v2.0 by DelfikPro\n");
 		File screenshotFile = new File(args.length == 0 ? "example.png" : args[0]);
+		boolean transparent = args.length > 0 && args[args.length - 1].equals("--nobackground");
 
 		final Map<String, Object>[] ymled = new Map[1];
 		execute("Reading config", () -> {
@@ -70,7 +71,8 @@ public class Evidence {
 		Player p = Vime.getPlayer(playername);
 
 		execute("Loading file", () -> {
-			s = new ScaledImage(screenshotFile, 2);
+			BufferedImage img = ImageIO.read(screenshotFile);
+			s = new ScaledImage(transparent ? new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_4BYTE_ABGR) : img, 2);
 			Font.bind(s);
 			msg = "Image type: " + s.base.getType() + ", width: " + s.base.getWidth() + ", height: " + s.base.getHeight() + ", numbands: " + s.format;
 		});
@@ -169,7 +171,7 @@ public class Evidence {
 		});
 
 
-		execute("Saving result", () -> s.save(new File(getFileName(new File("evidences"))), BufferedImage.TYPE_3BYTE_BGR));
+		execute("Saving result", () -> s.save(new File(getFileName(new File("evidences"))), transparent ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR));
 
 		long end = System.currentTimeMillis();
 

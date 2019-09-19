@@ -30,9 +30,8 @@ public class ScaledImage {
 	private float[] colors = {1, 1, 1, 1};
 	private Filter filter;
 
-	public ScaledImage(File file, int scale) throws IOException {
+	public ScaledImage(BufferedImage img, int scale) throws IOException {
 		this.scale = scale;
-		BufferedImage img = ImageIO.read(file);
 		this.base = img.getType() == TYPE_4BYTE_ABGR ? img : Util.convertColorspace(img, TYPE_4BYTE_ABGR);
 		this.g = base.createGraphics();
 		this.r = base.getRaster();

@@ -8,11 +8,14 @@
           <element id="file-copy" path="$PROJECT_DIR$/env/resourcepacks/vanilla.zip" />
         </element>
         <element id="file-copy" path="$PROJECT_DIR$/env/evidence.yml" />
-        <element id="file-copy" path="$PROJECT_DIR$/env/start.bat" />
         <element id="directory" name="pages">
           <element id="file-copy" path="$PROJECT_DIR$/env/pages/hand1000.png" />
           <element id="file-copy" path="$PROJECT_DIR$/env/pages/hand1920.png" />
         </element>
+        <element id="file-copy" path="$PROJECT_DIR$/env/real.png" />
+        <element id="file-copy" path="$PROJECT_DIR$/env/example.png" />
+        <element id="file-copy" path="$PROJECT_DIR$/env/make.bat" />
+        <element id="file-copy" path="$PROJECT_DIR$/env/no_background.bat" />
       </element>
     </root>
   </artifact>
