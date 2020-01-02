@@ -18,4 +18,9 @@ public class ScreenMessage implements Message {
 		return "Снимок экрана сохранён как §n" + time + ".png";
 	}
 
+	@Override
+	public String toString() {
+		return "screen:" + time;
+	}
+
 }

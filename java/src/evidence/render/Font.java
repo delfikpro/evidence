@@ -64,8 +64,8 @@ public class Font {
 			x += drawChar(c, x, y, color, colorFactor);
 			if (underline) {
 				float o = colorFactor == 1 ? 0 : 0.5f;
-				int rgb = new java.awt.Color(color.r, color.g, color.b).getRGB();
-				bint.rect(dx - 1 + o, y + 8 + o, dx - 1 + o + 5, y + 8 + o + 1, rgb);
+//				int rgb = new java.awt.Color(color.r, color.g, color.b).getRGB();
+				bint.rect(dx - 1 + o, y + 8 + o, dx - 1 + o + 5, y + 8 + o + 1, -1);
 			}
 		}
 		bint.setColor(1, 1, 1, 1);

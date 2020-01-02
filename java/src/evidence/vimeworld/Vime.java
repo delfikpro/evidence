@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Vime {
 
-	private static final Map<String, Player> playercache = new HashMap<>();
+	public static final Map<String, Player> playercache = new HashMap<>();
 	private static final Map<Integer, Guild> guildcache = new HashMap<>();
 	public static Map<String, String> prefixes = new HashMap<>();
 

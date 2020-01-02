@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class ScaledImage {
 
@@ -30,7 +32,7 @@ public class ScaledImage {
 	private float[] colors = {1, 1, 1, 1};
 	private Filter filter;
 
-	public ScaledImage(BufferedImage img, int scale) throws IOException {
+	public ScaledImage(BufferedImage img, int scale) {
 		this.scale = scale;
 		this.base = img.getType() == TYPE_4BYTE_ABGR ? img : Util.convertColorspace(img, TYPE_4BYTE_ABGR);
 		this.g = base.createGraphics();
@@ -195,6 +197,24 @@ public class ScaledImage {
 
 	}
 
+//	public void quad(Vec3d a, Vec3d b, Vec3d c, Vec3d d, int width, int color) {
+//		double maxX = max(max(a.x, b.x), max(c.x, d.x));
+//		double minX = min(min(a.x, b.x), min(c.x, d.x));
+//		double maxY = max(max(a.y, b.y), max(c.y, d.y));
+//		double minY = min(min(a.y, b.y), min(c.y, d.y));
+//
+//		double a
+//
+//		for (int x = (int) minX; x < maxX; x++) {
+//			for (int y = (int) minY; y < maxY; y++) {
+//				double dx = x /
+//			}
+//		}
+//
+//
+//
+//	}
+//
 	public void flush() {
 		r.setPixels(0, 0, width, height, data);
 	}
@@ -209,6 +229,7 @@ public class ScaledImage {
 		else img = base;
 		ImageIO.write(img, "PNG", file);
 	}
+
 
 
 }

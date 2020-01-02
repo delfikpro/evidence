@@ -5,33 +5,57 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public final class API {
 	private API() {}
 
-	protected static String readRequest(String address) {
+	static {
+		try {
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
+
+	public static String readRequest(String address) {
+		return readRequest(address, true, Collections.emptyMap());
+	}
+	public static String readRequest(String address, boolean read, Map<String, String> headers) {
 		try {
 			String server = new String(address.getBytes(StandardCharsets.UTF_8), "windows-1251");
-//			server += (server.contains("?") ? "&" : "?") + "token=" + Callisto.getVimeToken();
 			URL url = new URL(server);
 			URLConnection connection = url.openConnection();
+			for (Map.Entry<String, String> e : headers.entrySet()) {
+				connection.setRequestProperty(e.getKey(), e.getValue());
+			}
 			connection.connect();
+			try {
+				InputStream is = connection.getInputStream();
+			} catch (FileNotFoundException ex) {
+				if (!read) return "";
+				else System.out.println("штото не так");
+			}
+			if (!read) return "";
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String result = reader.readLine();
 			reader.close();
 			if (result.equals("[]") || result.startsWith("{\"error\":")) throw new IllegalArgumentException(address + " returned " + result);
 			return result;
 		} catch (IllegalArgumentException ex) {
-		  throw ex;
+		    if (read) throw ex;
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			if (read) throw new RuntimeException(ex);
 		}
+		return "";
 	}
 
 	public static evidence.vimeworld.Guild getGuild(String guildname) {

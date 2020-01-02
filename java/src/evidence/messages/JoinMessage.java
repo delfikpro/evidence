@@ -16,4 +16,9 @@ public class JoinMessage implements Message {
 		return "+ " + Vime.getDisplayName(player) + "§f вошел в лобби!";
 	}
 
+	@Override
+	public String toString() {
+		return "+" + player.getName();
+	}
+
 }

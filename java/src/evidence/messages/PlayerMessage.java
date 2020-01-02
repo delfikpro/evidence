@@ -22,7 +22,7 @@ public class PlayerMessage implements Message {
 
 	@Override
 	public String toString() {
-		return getText();
+		return player + ": " + message;
 	}
 
 }
