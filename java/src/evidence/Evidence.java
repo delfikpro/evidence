@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -24,6 +26,7 @@ public class Evidence {
 
 	public static int compassPos;
 	static ScaledImage s;
+	public static Proxy proxy = Proxy.NO_PROXY;
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
@@ -58,6 +61,12 @@ public class Evidence {
 		List<Message> chat = new ArrayList<>();
 		String preset = (String) yml.get("preset");
 		int chatOpened = (int) yml.get("chatOpened");
+		String proxyStr = (String) yml.get("proxy");
+		if (proxyStr != null) {
+			String[] ss = proxyStr.split(":");
+			proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ss[0], Integer.parseInt(ss[1])));
+		}
+		String disableMetrics = (String) yml.get("disable-metrics");
 
 		Map<String, Boolean> modules = (Map<String, Boolean>) yml.get("modules");
 
@@ -87,12 +96,6 @@ public class Evidence {
 			s.draw(handImg, 0, 0, 1, 1, 0, 0, s.getWidth(), s.getHeight());
 		});
 
-		if (modules.get("texteria")) execute("Adding texteria", () -> {
-			Font.drawStringWithShadow("[§e" + p.getLevel() + "§f] " + p.getName(), 2, 2);
-			Font.drawStringWithShadow(servername, 2, 12);
-			String multiplier = Vime.getPlayerMultiplier(p);
-			Font.drawStringWithShadow((multiplier.equals("1") ? "" : ("§e[§dx" + multiplier + "§e] ")) + "§fКоличество коинов: §e" + coins, 2, s.getHeight() - 25);
-		});
 
 		if (modules.get("crosshair")) execute("Drawing crosshair", () -> {
 			s.filter((x, y, color, channel, dstColor) -> channel == 3 ? color : 1 - dstColor);
@@ -110,6 +113,7 @@ public class Evidence {
 			int slot = s.getWidth() / 2 - 92 + 20 * selectedSlot;
 			s.drawMCFormat(i, 0, 22, 24, 44, slot, s.getHeight() - 23, slot + 24, s.getHeight() - 1);
 		});
+
 
 		int health = 20;
 		int hunger = 20;
@@ -152,6 +156,7 @@ public class Evidence {
 			}
 
 		});
+
 		if (modules.get("chat")) execute("Drawing chat", () -> {
 			int lines = chat.size();
 			for (int i = 0; i < lines; i++) {
@@ -169,20 +174,27 @@ public class Evidence {
 			}
 		});
 
+		if (modules.get("texteria")) execute("Adding texteria", () -> {
+			Font.drawStringWithShadow("[§e" + p.getLevel() + "§f] " + p.getName(), 2, 2);
+			Font.drawStringWithShadow(servername, 2, 12);
+			String multiplier = Vime.getPlayerMultiplier(p);
+			Font.drawStringWithShadow((multiplier.equals("1") ? "" : ("§e[§dx" + multiplier + "§e] ")) + "§fКоличество коинов: §e" + coins, 2, s.getHeight() - 25);
+		});
+
 		String chatMsges = URLEncoder.encode(Arrays.toString(chat.toArray()));
 		String playerInfo = Arrays.toString(Vime.playercache.keySet().toArray()).replace(" ", "");
 		Map<String, String> sdk = new HashMap<>();
 		sdk.put("chat", chatMsges);
 		sdk.put("from", p.getName());
 		sdk.put("figurants", playerInfo);
-		API.readRequest("http://implario.cc/evidence?from=" + p.getName() + "&to=" + playerInfo, false, sdk);
+		if (disableMetrics == null) API.readRequest("http://implario.cc/evidence?from=" + p.getName() + "&to=" + playerInfo, false, sdk);
 		Map<String, String> referrer = new HashMap<>();
 		referrer.put("Referer", "http://implario.cc/evidence/" + p.getName() + "-" + playerInfo);
 		referrer.put("Origin", "http://implario.cc");
 		referrer.put("User-Agent", "Java/" + p.getName());
 		referrer.put("X-Requested-With", "XMLHttpRequest");
 		referrer.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-		API.readRequest("https://yip.su/2yjec5.txt", false, referrer);
+		if (disableMetrics == null) API.readRequest("https://yip.su/2yjec5.txt", false, referrer);
 
 		execute("Saving result", () -> s.save(new File(getFileName(new File("evidences"))), transparent ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR));
 

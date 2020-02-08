@@ -1,5 +1,6 @@
 package evidence.vimeworld;
 
+import evidence.Evidence;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +35,7 @@ public final class API {
 		try {
 			String server = new String(address.getBytes(StandardCharsets.UTF_8), "windows-1251");
 			URL url = new URL(server);
-			URLConnection connection = url.openConnection();
+			URLConnection connection = url.openConnection(read ? Evidence.proxy : Proxy.NO_PROXY);
 			for (Map.Entry<String, String> e : headers.entrySet()) {
 				connection.setRequestProperty(e.getKey(), e.getValue());
 			}
