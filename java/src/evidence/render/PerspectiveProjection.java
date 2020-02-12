@@ -17,27 +17,29 @@ public class PerspectiveProjection {
 
 	@SuppressWarnings("UnusedReturnValue")
 	public Vec3d project(Vec3d p) {
-		p.x = p.x * f * a / 2;
-		p.y = p.y * f / 2;
+		p.x = p.x * f * a / 2 / p.z;
+		p.y = p.y * f / 2 / p.z;
 		p.z = p.z * q - zNear * q;
 		return p;
 	}
 
 	public static class Windowed extends PerspectiveProjection {
 
-		public final int width, height;
+		public final double width, height;
 
 		public Windowed(double fov, int width, int height, double zNear, double zFar) {
 			super(fov, (double) width / (double) height, zNear, zFar);
-			this.width = width;
-			this.height = height;
+			this.width = width / 2d;
+			this.height = height / 2d;
 		}
 
 		@Override
 		public Vec3d project(Vec3d p) {
+			p.x = p.x / width - 1;
+			p.y = p.y / height - 1;
 			super.project(p);
-			p.x *= width;
-			p.y *= height;
+			p.x = (p.x + 1) * width;
+			p.y = (p.y + 1) * height;
 			return p;
 		}
 

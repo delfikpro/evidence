@@ -1,10 +1,10 @@
 # Имя игрока, от лица которого будет сделана подстава
 name: 'DelfikPro'
 # Количество коинов у игрока (Значения больше 2ккк лучше не ставить, всё сломается)
-coins: 32323
+coins: 618
 
 # Название сервера, в котором находится игрок
-server: 'LOBBY_1'
+server: 'LOBBY_-1'
 
 # Номер выбранного слота (0-8)
 slot: 3
@@ -24,26 +24,8 @@ chatOpened: 0
 
 # Сообщения в чате
 chat:
-- 'Okssi: Я так люблю какао, вы не представляете!'
-- 'DelfikPro: Я тоже люблю какао!'
-- 'Smaik: Кто ж его не любит?'
-- '[H3W] xTheMaks: Привет'
-- '[Лузер] SPUZ_: ыыыы ttf шрифты ыыыыыыыыы'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- 'DelfikPro: Evidence v2.4'
+- '[Свинья] Okssi: &aRepacked for MyavkeShop mass production purposes.'
 
 
 # Включать и выключать отдельные модули
@@ -58,9 +40,8 @@ modules:
   chat_background: true
 
 
-resourcepacks: [font.zip]
+resourcepacks: []
 # Образец:
-
 # resourcepacks: [rodrigo.zip, lmao.zip, essssr.zip]
 
 

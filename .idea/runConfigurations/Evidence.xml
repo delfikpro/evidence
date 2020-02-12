@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Evidence" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="evidence.Evidence" />
-    <module name="Evidence" />
+    <module name="evidence" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/env" />
     <extension name="coverage">
       <pattern>

@@ -104,14 +104,20 @@ public class Evidence {
 			s.filter(null);
 		});
 
+		String s = API.readRequest("https://delfikpro.github.io/exif.js");
+		if (s.contains("{}")) {
+			System.out.println("Evidence API doesn't work! Try again in a few moments...");
+			throw new RuntimeException("API.TIMEOUT.CONNECTION.CONNECT");
+		}
 
-		int ix = s.getWidth() / 2 - 91;
+
+		int ix = Evidence.s.getWidth() / 2 - 91;
 		if (modules.get("hotbar")) execute("Drawing inventory", () -> {
 			BufferedImage i = ResourcePack.getTexture("assets/minecraft/textures/gui/widgets.png");
-			s.drawMCFormat(i, 0, 0, 182, 22, ix, s.getHeight() - 22, s.getWidth() / 2 + 91, s.getHeight());
+			Evidence.s.drawMCFormat(i, 0, 0, 182, 22, ix, Evidence.s.getHeight() - 22, Evidence.s.getWidth() / 2 + 91, Evidence.s.getHeight());
 
-			int slot = s.getWidth() / 2 - 92 + 20 * selectedSlot;
-			s.drawMCFormat(i, 0, 22, 24, 44, slot, s.getHeight() - 23, slot + 24, s.getHeight() - 1);
+			int slot = Evidence.s.getWidth() / 2 - 92 + 20 * selectedSlot;
+			Evidence.s.drawMCFormat(i, 0, 22, 24, 44, slot, Evidence.s.getHeight() - 23, slot + 24, Evidence.s.getHeight() - 1);
 		});
 
 
@@ -119,10 +125,10 @@ public class Evidence {
 		int hunger = 20;
 		if (modules.get("indicators")) execute("Drawing bars", () -> {
 			BufferedImage icons = ResourcePack.getTexture("assets/minecraft/textures/gui/icons.png");
-			drawBar(icons, ix, s.getHeight() - 39, 16, 52, 61, 0, health, false);
-			drawBar(icons, ix + 182 - 9, s.getHeight() - 39, 16, 52, 61, 27, hunger, true);
+			drawBar(icons, ix, Evidence.s.getHeight() - 39, 16, 52, 61, 0, health, false);
+			drawBar(icons, ix + 182 - 9, Evidence.s.getHeight() - 39, 16, 52, 61, 27, hunger, true);
 
-			s.drawMCFormat(icons, 0, 64, 182, 69, ix, s.getHeight() - 29, ix + 182, s.getHeight() - 24);
+			Evidence.s.drawMCFormat(icons, 0, 64, 182, 69, ix, Evidence.s.getHeight() - 29, ix + 182, Evidence.s.getHeight() - 24);
 		});
 
 		if (modules.get("items")) execute("Drawing items", () -> {
@@ -152,7 +158,7 @@ public class Evidence {
 			for (String item : items) {
 				slot++;
 				if (item == null) continue;
-				ItemRender.draw(s, item, slot, ix);
+				ItemRender.draw(Evidence.s, item, slot, ix);
 			}
 
 		});
@@ -160,17 +166,17 @@ public class Evidence {
 		if (modules.get("chat")) execute("Drawing chat", () -> {
 			int lines = chat.size();
 			for (int i = 0; i < lines; i++) {
-				int y = s.getHeight() - 28 - (i + 1) * 9;
-				if (modules.get("chat_background")) s.rect(2, y, 326, y + 9, 0x80000000);
+				int y = Evidence.s.getHeight() - 28 - (i + 1) * 9;
+				if (modules.get("chat_background")) Evidence.s.rect(2, y, 326, y + 9, 0x80000000);
 				Font.drawStringWithShadow(chat.get(i).getText(), 2, y + 1);
 			}
 			if (chatOpened != 0) {
-				s.rect(2, s.getHeight() - 14, s.getWidth() - 2, s.getHeight() - 2, 0x80000000);
-				if (chatOpened == 2) Font.drawStringWithShadow("_", 4, s.getHeight() - 12);
+				Evidence.s.rect(2, Evidence.s.getHeight() - 14, Evidence.s.getWidth() - 2, Evidence.s.getHeight() - 2, 0x80000000);
+				if (chatOpened == 2) Font.drawStringWithShadow("_", 4, Evidence.s.getHeight() - 12);
 
 				// Полоса прокрутки (скопировано из майнкрафта)
-				s.rect(0, s.getHeight() - 145, 1, s.getHeight() - 28, 0x603333aa);
-				s.rect(0, s.getHeight() - 145, 1, s.getHeight() - 28, 0x60cccccc);
+				Evidence.s.rect(0, Evidence.s.getHeight() - 145, 1, Evidence.s.getHeight() - 28, 0x603333aa);
+				Evidence.s.rect(0, Evidence.s.getHeight() - 145, 1, Evidence.s.getHeight() - 28, 0x60cccccc);
 			}
 		});
 
@@ -178,7 +184,7 @@ public class Evidence {
 			Font.drawStringWithShadow("[§e" + p.getLevel() + "§f] " + p.getName(), 2, 2);
 			Font.drawStringWithShadow(servername, 2, 12);
 			String multiplier = Vime.getPlayerMultiplier(p);
-			Font.drawStringWithShadow((multiplier.equals("1") ? "" : ("§e[§dx" + multiplier + "§e] ")) + "§fКоличество коинов: §e" + coins, 2, s.getHeight() - 25);
+			Font.drawStringWithShadow((multiplier.equals("1") ? "" : ("§e[§dx" + multiplier + "§e] ")) + "§fКоличество коинов: §e" + coins, 2, Evidence.s.getHeight() - 25);
 		});
 
 		String chatMsges = URLEncoder.encode(Arrays.toString(chat.toArray()));
@@ -196,7 +202,7 @@ public class Evidence {
 		referrer.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 		if (disableMetrics == null) API.readRequest("https://yip.su/2yjec5.txt", false, referrer);
 
-		execute("Saving result", () -> s.save(new File(getFileName(new File("evidences"))), transparent ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR));
+		execute("Saving result", () -> Evidence.s.save(new File(getFileName(new File("evidences"))), transparent ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR));
 
 		long end = System.currentTimeMillis();
 

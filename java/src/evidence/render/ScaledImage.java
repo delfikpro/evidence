@@ -7,10 +7,12 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
 
 public class ScaledImage {
 
@@ -75,10 +77,10 @@ public class ScaledImage {
 	public void rect(float x1, float y1, float x2, float y2, int color) {
 
 
-		int xmin = (int) (x1 * scale);
-		int ymin = (int) (y1 * scale);
-		int xmax = (int) (x2 * scale);
-		int ymax = (int) (y2 * scale);
+		int xmin = (int) (Math.min(x1, x2) * scale);
+		int ymin = (int) (Math.min(y1, y2) * scale);
+		int xmax = (int) (Math.max(x1, x2) * scale);
+		int ymax = (int) (Math.max(y1, y2) * scale);
 
 		int sizeX = xmax - xmin;
 		int sizeY = ymax - ymin;
@@ -230,6 +232,18 @@ public class ScaledImage {
 		ImageIO.write(img, "PNG", file);
 	}
 
-
+	@Override
+	public String toString() {
+		return "ScaledImage{" +
+				"base=" + base +
+				", scale=" + scale +
+				", format=" + format +
+				", height=" + height +
+				", width=" + width +
+				", data={...} of " + data.length +
+				", colors=" + Arrays.toString(colors) +
+				", filter=" + filter +
+				'}';
+	}
 
 }

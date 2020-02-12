@@ -13,4 +13,17 @@ public class Vec3d {
 		this.z = z;
 	}
 
+	@Override
+	public String toString() {
+		return "Vec3d{" + x + ", " + y + ", " + z + '}';
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public Vi toVec3i() {
+		return new Vi((int) x, (int) y, (int) z);
+	}
+
 }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/java/Evidence.iml" filepath="$PROJECT_DIR$/java/Evidence.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java/evidence.iml" filepath="$PROJECT_DIR$/java/evidence.iml" />
       <module fileurl="file://$PROJECT_DIR$/java/logparser.iml" filepath="$PROJECT_DIR$/java/logparser.iml" />
     </modules>
   </component>

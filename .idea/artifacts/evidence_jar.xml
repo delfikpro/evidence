@@ -5,7 +5,7 @@
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/java/META-INF/MANIFEST.MF" />
       </element>
-      <element id="module-output" name="Evidence" />
+      <element id="module-output" name="evidence" />
       <element id="extracted-dir" path="$PROJECT_DIR$/java/lib/json.jar" path-in-jar="/" />
     </root>
   </artifact>
