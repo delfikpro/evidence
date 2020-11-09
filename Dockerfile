@@ -2,7 +2,7 @@
 # Build stage
 FROM gradle AS build
 COPY ./ /app/
-RUN gradlew build
+RUN gradle build
 
 # Run stage
 FROM openjdk:14-alpine
