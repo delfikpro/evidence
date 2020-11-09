@@ -1,6 +1,6 @@
 
 # Build stage
-FROM gradle AS build
+FROM gradle:6.7-jdk11 AS build
 COPY ./ /app/
 WORKDIR /app
 RUN gradle build
