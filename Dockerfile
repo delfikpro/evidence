@@ -2,6 +2,7 @@
 # Build stage
 FROM gradle AS build
 COPY ./ /app/
+WORKDIR /app
 RUN gradle build
 
 # Run stage
