@@ -25,7 +25,7 @@ public class ScaledImage {
 
 	public final BufferedImage base;
 	public final Graphics2D g;
-	public final int scale;
+	public int scale;
 	public final WritableRaster r;
 	public final int[] data;
 	public final int format;
@@ -93,6 +93,7 @@ public class ScaledImage {
 
 		for (int x = xmin, a = 0; x < xmax; x++, a++) {
 			for (int y = ymin, b = 0; y < ymax; y++, b++) {
+				if (x > width) continue;
 				int offsetImg = (y * width + x) * format;
 
 				double px = (double) a / sizeX;
@@ -166,6 +167,7 @@ public class ScaledImage {
 			pixelIterating:
 			for (double y = ymin, b = 0; y < ymax; y++, b++) {
 				int offsetImg = (int) ((y * width + x) * format);
+				if (offsetImg >= data.length) continue;
 				double px = a / sizeX;
 				double py = b / sizeY;
 				double rayX = (float) (px * tw);

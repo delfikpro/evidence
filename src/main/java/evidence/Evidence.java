@@ -1,5 +1,6 @@
 package evidence;
 
+import implario.Environment;
 import implario.LoggerUtils;
 import evidence.hand.TextureMap;
 import evidence.messages.Message;
@@ -52,12 +53,12 @@ public class Evidence {
 		manager.init(LoggerUtils.simpleLogger("Evidence"));
 
 		Evidence evidence = new Evidence(manager);
-		byte[] generate = evidence.generate(new FileInputStream("evidence.yml"), new FileInputStream(screenshotFile), transparent);
+		byte[] generate = evidence.generate(new FileInputStream("evidence.yml"), new FileInputStream(screenshotFile), transparent, false);
 		Files.write(new File(getFileName(new File("evidences"))).toPath(), generate);
 	}
 
-	@SuppressWarnings("unchecked")
-	public byte[] generate(InputStream configStream, InputStream imageStream, boolean transparent) throws Exception {
+	@SuppressWarnings ("unchecked")
+	public byte[] generate(InputStream configStream, InputStream imageStream, boolean transparent, boolean placeWatermark) throws Exception {
 
 		long start = System.currentTimeMillis();
 
@@ -83,9 +84,6 @@ public class Evidence {
 
 		Map<String, Boolean> modules = (Map<String, Boolean>) yml.get("modules");
 
-
-
-
 		this.font = new Font(this);
 
 		List<Message> chat = new ArrayList<>();
@@ -97,9 +95,10 @@ public class Evidence {
 		BufferedImage baseImage = Util.convertColorspace(ImageIO.read(imageStream), BufferedImage.TYPE_4BYTE_ABGR);
 		imageStream.close();
 
-		try (InputStream skinStream = EvidenceBot.download("https://skin.vimeworld.ru/raw/skin/" + playername + ".png")) {
+		if (modules.get("hand")) try (InputStream skinStream = EvidenceBot.download("https://skin.vimeworld.ru/raw/skin/" + playername + ".png")) {
 			BufferedImage skin = Util.convertColorspace(ImageIO.read(skinStream), BufferedImage.TYPE_4BYTE_ABGR);
 			for (int i = 0; i < 3; i++) {
+				if (skin.getHeight() < 64 && i != 1) continue;
 				File srcMap = new File("hand/layer" + i + "-texture.png");
 				File dstMap = new File("hand/layer" + i + "-" + baseImage.getWidth() + "x" + baseImage.getHeight() + ".png");
 				if (!dstMap.exists() || !dstMap.isFile())
@@ -112,17 +111,16 @@ public class Evidence {
 
 		this.image = new ScaledImage(transparent ? new BufferedImage(baseImage.getWidth(), baseImage.getHeight(), BufferedImage.TYPE_4BYTE_ABGR) : baseImage, 2);
 
-//		if (modules.get("hand")) execute("Drawing hand", () -> {
-//			String handPath = "pages/hand" + image.getWidth() * image.scale + ".png";
-//			File hand = new File(handPath);
-//			if (!hand.exists()) {
-//				msg = "Screenshot's width is NOT SUPPORTED! Hand will be distorted!";
-//				handPath = "pages/hand1920.png";
-//			}
-//			BufferedImage handImg = ImageIO.read(new File(handPath));
-//			image.draw(handImg, 0, 0, 1, 1, 0, 0, image.getWidth(), image.getHeight());
-//		});
-
+		//		if (modules.get("hand")) execute("Drawing hand", () -> {
+		//			String handPath = "pages/hand" + image.getWidth() * image.scale + ".png";
+		//			File hand = new File(handPath);
+		//			if (!hand.exists()) {
+		//				msg = "Screenshot's width is NOT SUPPORTED! Hand will be distorted!";
+		//				handPath = "pages/hand1920.png";
+		//			}
+		//			BufferedImage handImg = ImageIO.read(new File(handPath));
+		//			image.draw(handImg, 0, 0, 1, 1, 0, 0, image.getWidth(), image.getHeight());
+		//		});
 
 		if (modules.get("crosshair")) execute("Drawing crosshair", () -> {
 			image.filter((x, y, color, channel, dstColor) -> channel == 3 ? color : 1 - dstColor);
@@ -139,7 +137,6 @@ public class Evidence {
 			int slot = image.getWidth() / 2 - 92 + 20 * selectedSlot;
 			image.drawMCFormat(i, 0, 22, 24, 44, slot, image.getHeight() - 23, slot + 24, image.getHeight() - 1);
 		});
-
 
 		int health = 20;
 		int hunger = 20;
@@ -208,6 +205,20 @@ public class Evidence {
 		});
 
 
+		if (placeWatermark) {
+			String watermark = Environment.get("WATERMARK", "EVIDENCE BY DELFIKPRO ");
+
+			image.scale = 4;
+			image.filter((x, y, color, channel, dstColor) -> Math.min(channel == 3 ? color : dstColor + color * 0.2f, 1));
+			for (int i = 0; i < image.getHeight() / 9 + 1; i++) {
+				float x = 1;
+				while (true) {
+					if ((x = font.drawString(watermark, x, i * 9)) > image.getWidth()) break;
+				}
+			}
+
+		}
+
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		execute("Saving result", () -> image.save(stream, transparent ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR));
 
@@ -228,7 +239,7 @@ public class Evidence {
 		} else number = files.length;
 		String s = String.valueOf(number);
 		s = new String(new char[9 - s.length()]).replace('\0', '0') + s;
-		String name = s.substring(0, 3) + "_" + s.substring(3,6) + "_" + s.substring(6, 9);
+		String name = s.substring(0, 3) + "_" + s.substring(3, 6) + "_" + s.substring(6, 9);
 		return outputDir.getPath() + "/" + name + ".png";
 
 	}
@@ -265,7 +276,9 @@ public class Evidence {
 
 	@FunctionalInterface
 	private interface DangerousRunnable {
+
 		void run() throws IOException;
+
 	}
 
 }

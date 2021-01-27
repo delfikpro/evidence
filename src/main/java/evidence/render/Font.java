@@ -21,15 +21,15 @@ public class Font {
 		glyphStream.close();
 	}
 
-	public void drawStringWithShadow(String string, float x, float y) throws IOException {
+	public float drawStringWithShadow(String string, float x, float y) throws IOException {
 		drawString(string, x + 0.5F, y + 0.5F, 4);
-		drawString(string, x, y);
+		return drawString(string, x, y);
 	}
 
-	public void drawString(String s, float x, float y) throws IOException {
-		drawString(s, x, y, 1);
+	public float drawString(String s, float x, float y) throws IOException {
+		return drawString(s, x, y, 1);
 	}
-	public void drawString(String s, float x, float y, int colorFactor) throws IOException {
+	public float drawString(String s, float x, float y, int colorFactor) throws IOException {
 
 		boolean coloring = false;
 		Color color = Color.WHITE;
@@ -74,6 +74,7 @@ public class Font {
 			}
 		}
 		evidence.getImage().setColor(1, 1, 1, 1);
+		return x;
 	}
 
 	private void color(Color color, int factor) {
